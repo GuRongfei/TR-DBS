@@ -3,11 +3,12 @@
 ## 一、课题概述
 
 
+
+<details open>
 <style>
     p {margin:5px 15px}
     details {margin:5px 50px}
 </style>
-<details open>
     <summary><font size=5>概述</font></summary>
 	<p>以01工作中贡献的环境为基础，研究强化学习算法在<strong>个性化</strong>参数的环境中迁移的问题。</p>  
 </details>
