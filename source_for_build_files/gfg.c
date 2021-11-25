@@ -45,20 +45,20 @@ double *  Pertrubation(double* y, double dkick)
 }
 
 //Calculate mean_field x
- double Calc_mfx(double* y)
+ double Calc_mfx(double* y, double amplitue_rate)
 {  
   int k;
   for (k=1, mfx=0; k<=nosc; k++)  mfx+=y[2*k-1];  
-  return mfx/nosc;
+  return mfx * amplitue_rate/nosc;
 
 }
 
 //Calculate mean_field y
- double Calc_mfy(double* y)
+ double Calc_mfy(double* y, double amplitue_rate)
 {  
   int k;
   for (k=1, mfy=0; k<=nosc; k++)  mfy+=y[2*k];  
-  return mfy/nosc;
+  return mfy * amplitue_rate/nosc;
 
 }
 //Make_step via rk

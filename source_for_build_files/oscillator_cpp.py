@@ -107,12 +107,12 @@ def init(nosc_, epsilon_, frrms_):
     return _oscillator_cpp.init(nosc_, epsilon_, frrms_)
 init = _oscillator_cpp.init
 
-def Calc_mfx(y):
-    return _oscillator_cpp.Calc_mfx(y)
+def Calc_mfx(y, amplitude_rate):
+    return _oscillator_cpp.Calc_mfx(y, amplitude_rate)
 Calc_mfx = _oscillator_cpp.Calc_mfx
 
-def Calc_mfy(y):
-    return _oscillator_cpp.Calc_mfy(y)
+def Calc_mfy(y, amplitude_rate):
+    return _oscillator_cpp.Calc_mfy(y, amplitude_rate)
 Calc_mfy = _oscillator_cpp.Calc_mfy
 
 def grf_test_c(g):

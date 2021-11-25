@@ -6,6 +6,6 @@ void BvdP(double t, double y[], double ydot[]);
 double * Pertrubation(double* y, double dkick);
 double *  Make_step(double *y, double frequency_rate);
 double * init (int nosc_, double epsilon_, double frrms_);
-double Calc_mfx(double* y);
-double Calc_mfy(double* y);
+double Calc_mfx(double* y, double amplitude_rate);
+double Calc_mfy(double* y, double amplitude_rate);
 int grf_test_c(int g);

@@ -16,7 +16,7 @@ matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 
 
-def make_env(env_id, rank, env_para, seed=0, ):
+def make_env(env_id, rank,seed=0, **env_para ):
     """
     Utility function for multiprocessed env.
 
@@ -62,16 +62,20 @@ class Executor:
         self.setup_algo_model()
 
         if self.new_executor:
-            self.folder_num = sum([1 for _ in os.listdir('../result/executor/%s/%s/' % (self.env_id, self.algo_id))])
-            self.save_path = '../result/executor/%s/%s/%s' % (self.env_id, self.algo_id, str(self.folder_num))
+            self.folder_num = sum([1 for _ in os.listdir('./result/executor/%s/%s/' % (self.env_id, self.algo_id))])
+            self.save_path = './result/executor/%s/%s/%s' % (self.env_id, self.algo_id, str(self.folder_num))
             os.mkdir(self.save_path)
         else:
-            self.save_path = '../result/executor/%s/%s/%s' % (self.env_id, self.algo_id, str(self.folder_num))
+            self.save_path = './result/executor/%s/%s/%s' % (self.env_id, self.algo_id, str(self.folder_num))
             self.algo_model = self.algo_model.load('%s/model.pkl' % self.save_path)
 
     def setup_env(self):
         if self.env_id == 'oscillator-v0':
-            self.train_env = gym.make(self.env_id, **self.env_para)
+            if self.use_multi_env:
+                self.train_env = SubprocVecEnv([make_env(self.env_id, i, **self.env_para) for i in range(8)])
+            else:
+                self.train_env = gym.make(self.env_id, **self.env_para)
+            self.env_para['ep_length'] = 20000
             self.test_env = gym.make(self.env_id, **self.env_para)
         else:
             self.train_env = gym.make(self.env_id)
@@ -97,10 +101,10 @@ class Executor:
         ax.set_xlabel("TimeStep(1024*)", fontsize=20)
         ax.set_ylabel("reward", fontsize=20)
         ax.set_title("Train Reward", fontsize=25)
-        plt.savefig('%s/trainReward.png' % self.save_path)
+        plt.savefig('%s/trainReward.png' % self.save_path)"""
 
         if save:
-            self.algo_model.save('%s/model.pkl' % self.save_path)"""
+            self.algo_model.save('%s/model.pkl' % self.save_path)
 
     def test_model(self, test_timestep):
         if self.env_id == 'oscillator-v0':
@@ -112,8 +116,8 @@ class Executor:
 
     def test_osc(self, test_timestep):
         test_obs, states_x, test_act, test_rwd = [], [], [], []
-        for test_step in range(1200+test_timestep):
-            if test_step<1000 or test_step>=(1000+test_timestep):
+        for test_step in range(7000+test_timestep):
+            if test_step < 5000 or test_step >= (5000+test_timestep):
                 action = [0]
             else:
                 action = self.model_pred()

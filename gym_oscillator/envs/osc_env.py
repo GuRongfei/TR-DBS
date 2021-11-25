@@ -1,3 +1,4 @@
+import random
 import gym
 import numpy as np
 from gym import error, spaces, utils
@@ -37,11 +38,11 @@ class oscillatorEnv(gym.Env):
     #Dimensionality of our observation space
     self.dim = 1
     self.action_space = Box(low=-1, high=1, shape=(1,), dtype=np.float32)
-    self.observation_space = Box(low=-1.5, high=1.5, shape=(len_state,), dtype=np.float32)
+    self.observation_space = Box(low=-1.5*amplitude_rate, high=1.5*amplitude_rate, shape=(len_state,), dtype=np.float32)
 
     #Meanfield for all neurons
-    self.x_val = oscillator_cpp.Calc_mfx(self.y)
-    self.y_val = oscillator_cpp.Calc_mfy(self.y)
+    self.x_val = oscillator_cpp.Calc_mfx(self.y, amplitude_rate)
+    self.y_val = oscillator_cpp.Calc_mfy(self.y, amplitude_rate)
 
     #Episode Done?
     self.done = False
@@ -78,8 +79,8 @@ class oscillatorEnv(gym.Env):
       self.y = oscillator_cpp.Make_step(self.y, self.frequency_rate)
           
       #Calculate MeanField
-      self.x_val = oscillator_cpp.Calc_mfx(self.y)
-      self.y_val = oscillator_cpp.Calc_mfy(self.y)
+      self.x_val = oscillator_cpp.Calc_mfx(self.y, self.amplitude_rate)
+      self.y_val = oscillator_cpp.Calc_mfy(self.y, self.amplitude_rate)
       
       #if sigmoid:
           #self.x_val = sigmoid(self.x_val)
@@ -119,15 +120,16 @@ class oscillatorEnv(gym.Env):
     self.x_state = []
     self.y = oscillator_cpp.init(self.nosc,self.epsilon,self.frrms)
 
-    for i in range(self.len_state):
+    ran_step = random.sample([0, self.len_state], 1)[0]
+    for i in range(ran_step + 1000):
         #oscillator_cpp.Make_step(self.y)
         self.y = oscillator_cpp.Make_step(self.y, self.frequency_rate)
         
-        self.x_val = oscillator_cpp.Calc_mfx(self.y)
-        self.y_val = oscillator_cpp.Calc_mfy(self.y)
+        self.x_val = oscillator_cpp.Calc_mfx(self.y, self.amplitude_rate)
+        self.y_val = oscillator_cpp.Calc_mfy(self.y, self.amplitude_rate)
 
-        self.y_state.append(self.y_val * self.amplitude_rate)
-        self.x_state.append(self.x_val * self.amplitude_rate)
+        self.y_state.append(self.y_val)
+        self.x_state.append(self.x_val)
         
         #Check length of our state
         if len(self.y_state) > self.len_state:

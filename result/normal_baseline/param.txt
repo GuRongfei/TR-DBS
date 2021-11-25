@@ -1,0 +1,9 @@
+--------------info----------------
+|environment    | oscillator-v0  |
+|algorithm      | ppo            |
+-------------env para-------------
+|ep_length      | 20000          |
+------------algo para-------------
+|train timesteps| 10000000       |
+--------------rslt----------------
+|reward         | -0.576         |

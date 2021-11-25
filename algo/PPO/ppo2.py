@@ -319,6 +319,8 @@ class PPO2(ActorCriticRLModel):
             callback.on_training_start(locals(), globals())
 
             for update in range(1, n_updates + 1):
+                if not update%50:
+                    print("update: ", update, "/", n_updates+1)
                 assert self.n_batch % self.nminibatches == 0, ("The number of minibatches (`nminibatches`) "
                                                                "is not a factor of the total number of samples "
                                                                "collected per rollout (`n_batch`), "
