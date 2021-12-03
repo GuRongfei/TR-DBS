@@ -2,8 +2,11 @@
 |environment    | oscillator-v0  |
 |algorithm      | ppo            |
 -------------env para-------------
-|ep_length      | 20000          |
+|amplitude_rate | 1.05           |
+|frequency_rate | 1.1            |
+|ep_length      | 10000          |
 ------------algo para-------------
 |train timesteps| 10000000       |
 --------------rslt----------------
-|reward         | -0.576         | calculation error
+|reward         | -0.077         |
+|spr rate       | 4.953          |

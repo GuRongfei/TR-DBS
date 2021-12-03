@@ -3,6 +3,8 @@ warnings.filterwarnings("ignore")
 import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
+import numpy as np
+
 import gym
 import gym_oscillator
 from stable_baselines.common import set_global_seeds
@@ -37,37 +39,37 @@ def make_env(env_id, rank,seed=0, **env_para ):
 
 
 class Executor:
-    def __init__(self, env_id, env_para, algo_id, algo_para, new_executor=True, folder_num=-1, use_multi_env=False):
+    def __init__(self, env_id, env_para, algo_id, algo_para, new_executor=True, use_multi_env=False):
         self.env_id = env_id
         self.env_para = env_para
         self.algo_id = algo_id
         self.algo_para = algo_para
         self.new_executor = new_executor
-        self.folder_num = folder_num
         self.use_multi_env = use_multi_env
 
+        self.folder_num = None
         self.train_env = None
         self.test_env = None
         self.test_obs = None
         self.algo_model = None
+        self.finetune_model = None
 
+        self.modepath = None
         self.save_path = None
 
         self.train_timestep = None
 
-        self.setup()
+        if self.new_executor:
+            self.setup()
 
+    #setup
     def setup(self):
         self.setup_env()
         self.setup_algo_model()
 
-        if self.new_executor:
-            self.folder_num = sum([1 for _ in os.listdir('./result/executor/%s/%s/' % (self.env_id, self.algo_id))])
-            self.save_path = './result/executor/%s/%s/%s' % (self.env_id, self.algo_id, str(self.folder_num))
-            os.mkdir(self.save_path)
-        else:
-            self.save_path = './result/executor/%s/%s/%s' % (self.env_id, self.algo_id, str(self.folder_num))
-            self.algo_model = self.algo_model.load('%s/model.pkl' % self.save_path)
+        self.folder_num = sum([1 for _ in os.listdir('./result/executor/%s/%s/' % (self.env_id, self.algo_id))])
+        self.save_path = './result/executor/%s/%s/%s' % (self.env_id, self.algo_id, str(self.folder_num))
+        os.mkdir(self.save_path)
 
     def setup_env(self):
         if self.env_id == 'oscillator-v0':
@@ -75,19 +77,58 @@ class Executor:
                 self.train_env = SubprocVecEnv([make_env(self.env_id, i, **self.env_para) for i in range(8)])
             else:
                 self.train_env = gym.make(self.env_id, **self.env_para)
-            self.env_para['ep_length'] = 20000
+            if 'ep_length' in self.env_para.keys():
+                tmp = self.env_para['ep_length']
+            else:
+                tmp = 10000
+            self.env_para['ep_length'] = 50000
             self.test_env = gym.make(self.env_id, **self.env_para)
+            self.env_para['ep_length'] = tmp
         else:
             self.train_env = gym.make(self.env_id)
             self.test_env = gym.make(self.env_id)
 
         self.test_obs = self.test_env.reset()
 
-    def setup_algo_model(self):
-        if self.algo_id == 'ppo':
-            self.algo_model = PPO2(MlpPolicy, self.train_env, **self.algo_para)
+    def setup_algo_model(self, finetune=False):
+        if finetune:
+            self.finetune_model = PPO2(MlpPolicy, self.finetune_env, **self.algo_para)
+            self.finetune_model = self.finetune_model.load('%s/model.pkl' % self.model_path)
+            self.finetune_model.set_env(self.finetune_env)
+        elif self.algo_id == 'ppo':
+            if not self.new_executor:
+                self.algo_model = PPO2(MlpPolicy, self.test_env, **self.algo_para)
+                self.algo_model = self.algo_model.load('%s/model.pkl' % self.model_path)
+            else:
+                self.algo_model = PPO2(MlpPolicy, self.train_env, **self.algo_para)
         else:
             pass
+
+    #load
+    def load(self, test_env_para, finetune=False):
+        val_to_str = ['09', '095', '1', '105', '11']
+        ar_train = self.env_para['amplitude_rate']
+        fr_train = self.env_para['frequency_rate']
+        ar = val_to_str[int(0.5+20*(ar_train-0.9))]
+        fr = val_to_str[int(0.5+20*(fr_train-0.9))]
+        ar_test = test_env_para['amplitude_rate']
+        fr_test = test_env_para['frequency_rate']
+        ar_tst = val_to_str[int(0.5+20*(ar_test-0.9))]
+        fr_tst = val_to_str[int(0.5+20*(fr_test-0.9))]
+
+        self.finetune_env = SubprocVecEnv([make_env(self.env_id, i, **test_env_para) for i in range(8)])
+        test_env_para['ep_length'] = 50000
+        self.test_env = gym.make(self.env_id, **test_env_para)
+        self.test_obs = self.test_env.reset()
+
+        self.model_path = './result/direct_tr/baselines/%s-%s' % (ar, fr)
+        self.save_path = './result/direct_tr/baselines/%s-%s' % (ar_tst, fr_tst)
+        self.setup_algo_model(finetune)
+        #self.algo_model = self.algo_model.load('%s/model.pkl' % self.model_path)
+
+    # train
+    def finetune(self, finetune_step):
+        self.finetune_model.learn(finetune_step)
 
     def train_policy(self, train_timestep, save=False):
         self.algo_model.learn(train_timestep)
@@ -106,59 +147,71 @@ class Executor:
         if save:
             self.algo_model.save('%s/model.pkl' % self.save_path)
 
-    def test_model(self, test_timestep):
+    #test
+    def test_model(self, test_timestep, finetune=False):
         if self.env_id == 'oscillator-v0':
-            avr_rwd = self.test_osc(test_timestep)
+            avr_rwd, spr_rate = self.test_osc(test_timestep, finetune)
         else:
-            avr_rwd = 0
+            avr_rwd, spr_rate = 0, 0
+        avr_rwd = round(avr_rwd, 3)
+        spr_rate = round(spr_rate, 3)
         if self.new_executor:
-            self.savedata(round(avr_rwd, 3))
+            self.savedata(avr_rwd, spr_rate)
+        return avr_rwd, spr_rate
 
-    def test_osc(self, test_timestep):
+    def test_osc(self, test_timestep, finetune=False):
         test_obs, states_x, test_act, test_rwd = [], [], [], []
         for test_step in range(7000+test_timestep):
             if test_step < 5000 or test_step >= (5000+test_timestep):
                 action = [0]
             else:
-                action = self.model_pred()
+                action = self.model_pred(finetune)
             test_obs.append(self.test_obs)
             states_x.append(self.test_env.x_val)
             test_act.append(action)
             self.test_obs, rewards, dones, info = self.test_env.step(action)
             test_rwd.append(rewards)
 
-        print(states_x)
-
-        fig = plt.figure(figsize=(25, 10))
-        ax = fig.add_subplot(111)
-        ax.tick_params(labelsize=25)
-        ax.plot(test_act, '-', c='lightcoral', label='Action')
-        ax2 = ax.twinx()
-        ax2.tick_params(labelsize=25)
-        ax2.plot(states_x, '-r', c='steelblue', label='State ')
-        ax.legend(bbox_to_anchor=(1, 1), fontsize=25)
-        ax.grid()
-        ax.set_xlabel("TimeStep", fontsize=45)
-        ax.set_ylabel("Actions", fontsize=45)
-        ax2.set_ylabel("States", fontsize=45)
-        ax2.legend(bbox_to_anchor=(1, 0.9), fontsize=25)
-        ax.set_title("State length", fontsize=55)
-        plt.savefig('%s/SA.png' % self.save_path)
+        if self.new_executor:
+            fig = plt.figure(figsize=(25, 10))
+            ax = fig.add_subplot(111)
+            ax.tick_params(labelsize=30, pad=10)
+            ax2 = ax.twinx()
+            ax2.tick_params(labelsize=30, pad=10)
+            ax2.plot(test_act, '-', linewidth=3, c='lightcoral', label='Action')
+            ax.plot(states_x, '-', linewidth=3, c='steelblue', label='State ')
+            ax.legend(bbox_to_anchor=(0.88, 1.12), fontsize=25)
+            ax.grid()
+            ax.set_xlabel("TimeStep", fontsize=45, labelpad=20)
+            ax.set_ylabel("States", fontsize=45, labelpad=20)
+            ax2.set_ylabel("Actions", fontsize=45, labelpad=20)
+            ax2.legend(bbox_to_anchor=(1, 1.12), fontsize=25)
+            ax.set_title("State & Action", fontsize=55, pad=20)
+            plt.tight_layout()
+            plt.savefig('%s/SA.png' % self.save_path)
 
         if test_timestep == 0:
             return 0
         else:
-            avr_rwd = sum(test_rwd[1000:-200]) / float(test_timestep)
-            return avr_rwd
+            avr_rwd = sum(test_rwd[5000:-2000]) / float(test_timestep)
+            spr_rate = np.std(states_x[0:5000]) / np.std(states_x[5000:-2000])
+            return avr_rwd, spr_rate
 
-    def model_pred(self):
+    def model_pred(self, finetune=False):
         if self.algo_id == 'ppo':
-            action, _, _, _ = self.algo_model.step([self.test_obs])
+            if finetune:
+                action, _, _, _ = self.finetune_model.step([self.test_obs])
+            else:
+                action, _, _, _ = self.algo_model.step([self.test_obs])
         else:
-            action = self.algo_model.step(self.test_obs)
+            if finetune:
+                action = self.finetune_model.step(self.test_obs)
+            else:
+                action = self.algo_model.step(self.test_obs)
         return action
 
-    def savedata(self, reward):
+    #record
+    def savedata(self, reward, spr_rate):
         print("saving para in %s" % self.save_path)
         with open("%s/param.txt" % self. save_path, 'w+') as f:
             f.write("--------------info----------------\n")
@@ -172,4 +225,5 @@ class Executor:
             for k, v in self.algo_para.items():
                 f.write("|%-15s| %-15s|\n" % (k, v))
             f.write("--------------rslt----------------\n")
-            f.write("|reward         | %-15s|" % reward)
+            f.write("|reward         | %-15s|\n" % reward)
+            f.write("|spr rate       | %-15s|" % spr_rate)

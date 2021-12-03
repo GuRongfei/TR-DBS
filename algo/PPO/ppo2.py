@@ -5,7 +5,8 @@ import numpy as np
 import tensorflow as tf
 
 from stable_baselines import logger
-from stable_baselines.common import explained_variance, ActorCriticRLModel, tf_util, SetVerbosity, TensorboardWriter
+from stable_baselines.common import explained_variance, tf_util, SetVerbosity, TensorboardWriter
+from algo.base_class import ActorCriticRLModel
 from stable_baselines.common.runners import AbstractEnvRunner
 from algo.PPO.ppo2_policy import ActorCriticPolicy, RecurrentActorCriticPolicy
 from stable_baselines.common.schedules import get_schedule_fn
@@ -320,7 +321,7 @@ class PPO2(ActorCriticRLModel):
 
             for update in range(1, n_updates + 1):
                 if not update%50:
-                    print("update: ", update, "/", n_updates+1)
+                    print("update: ", update, "/", n_updates)
                 assert self.n_batch % self.nminibatches == 0, ("The number of minibatches (`nminibatches`) "
                                                                "is not a factor of the total number of samples "
                                                                "collected per rollout (`n_batch`), "

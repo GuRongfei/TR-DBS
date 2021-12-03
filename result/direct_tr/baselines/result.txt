@@ -1,0 +1,250 @@
+||env para       | 09-09                     ||
+||baseline       | rwd: -0.03  | spr: 3.413  ||
+||zero avr       | rwd: -0.226 | spr: 3.709  ||
+||zero max rwd   | rwd: -0.028 | spr: 5.1445 ||
+||zero max spr   | rwd: -0.045 | spr: 6.0555 ||
+||few  avr       | rwd: -0.226 | spr: 3.658  ||
+||few  max rwd   | rwd: -0.0245| spr: 5.1385 ||
+||few  max spr   | rwd: -0.0345| spr: 6.584  ||
+
+
+||env para       | 09-095                    ||
+||baseline       | rwd: -0.045 | spr: 3.949  ||
+||zero avr       | rwd: -0.116 | spr: 4.196  ||
+||zero max rwd   | rwd: -0.0205| spr: 9.4145 ||
+||zero max spr   | rwd: -0.0205| spr: 9.4145 ||
+||few  avr       | rwd: -0.2   | spr: 4.177  ||
+||few  max rwd   | rwd: -0.02  | spr: 6.589  ||
+||few  max spr   | rwd: -0.026 | spr: 8.222  ||
+
+
+||env para       | 09-1                      ||
+||baseline       | rwd: -0.067 | spr: 3.391  ||
+||zero avr       | rwd: -0.079 | spr: 4.88   ||
+||zero max rwd   | rwd: -0.025 | spr: 6.3545 ||
+||zero max spr   | rwd: -0.0465| spr: 7.276  ||
+||few  avr       | rwd: -0.124 | spr: 4.51   ||
+||few  max rwd   | rwd: -0.0285| spr: 6.0255 ||
+||few  max spr   | rwd: -0.03  | spr: 6.2105 ||
+
+
+||env para       | 09-105                    ||
+||baseline       | rwd: -0.028 | spr: 6.374  ||
+||zero avr       | rwd: -0.065 | spr: 4.833  ||
+||zero max rwd   | rwd: -0.0305| spr: 7.6995 ||
+||zero max spr   | rwd: -0.0305| spr: 7.6995 ||
+||few  avr       | rwd: -0.075 | spr: 4.375  ||
+||few  max rwd   | rwd: -0.032 | spr: 5.8865 ||
+||few  max spr   | rwd: -0.041 | spr: 5.9315 ||
+
+
+||env para       | 09-11                     ||
+||baseline       | rwd: -0.049 | spr: 4.899  ||
+||zero avr       | rwd: -0.069 | spr: 4.803  ||
+||zero max rwd   | rwd: -0.024 | spr: 4.4785 ||
+||zero max spr   | rwd: -0.0245| spr: 7.9745 ||
+||few  avr       | rwd: -0.076 | spr: 4.481  ||
+||few  max rwd   | rwd: -0.0315| spr: 6.9835 ||
+||few  max spr   | rwd: -0.0315| spr: 6.9835 ||
+
+
+||env para       | 095-09                    ||
+||baseline       | rwd: -0.041 | spr: 3.993  ||
+||zero avr       | rwd: -0.194 | spr: 3.846  ||
+||zero max rwd   | rwd: -0.0285| spr: 5.393  ||
+||zero max spr   | rwd: -0.0595| spr: 6.3455 ||
+||few  avr       | rwd: -0.228 | spr: 3.994  ||
+||few  max rwd   | rwd: -0.03  | spr: 8.8985 ||
+||few  max spr   | rwd: -0.03  | spr: 8.8985 ||
+
+
+||env para       | 095-095                   ||
+||baseline       | rwd: -0.088 | spr: 2.746  ||
+||zero avr       | rwd: -0.106 | spr: 4.371  ||
+||zero max rwd   | rwd: -0.021 | spr: 6.908  ||
+||zero max spr   | rwd: -0.021 | spr: 6.908  ||
+||few  avr       | rwd: -0.199 | spr: 4.431  ||
+||few  max rwd   | rwd: -0.018 | spr: 10.597 ||
+||few  max spr   | rwd: -0.018 | spr: 10.597 ||
+
+
+||env para       | 095-1                     ||
+||baseline       | rwd: -0.044 | spr: 4.704  ||
+||zero avr       | rwd: -0.087 | spr: 5.152  ||
+||zero max rwd   | rwd: -0.0205| spr: 8.7535 ||
+||zero max spr   | rwd: -0.0235| spr: 8.997  ||
+||few  avr       | rwd: -0.138 | spr: 4.347  ||
+||few  max rwd   | rwd: -0.0315| spr: 6.3935 ||
+||few  max spr   | rwd: -0.0315| spr: 6.3935 ||
+
+
+||env para       | 095-105                   ||
+||baseline       | rwd: -0.081 | spr: 3.85   ||
+||zero avr       | rwd: -0.068 | spr: 4.843  ||
+||zero max rwd   | rwd: -0.025 | spr: 7.851  ||
+||zero max spr   | rwd: -0.025 | spr: 7.851  ||
+||few  avr       | rwd: -0.076 | spr: 4.596  ||
+||few  max rwd   | rwd: -0.0355| spr: 6.6    ||
+||few  max spr   | rwd: -0.038 | spr: 7.088  ||
+
+
+||env para       | 095-11                    ||
+||baseline       | rwd: -0.148 | spr: 2.496  ||
+||zero avr       | rwd: -0.072 | spr: 4.869  ||
+||zero max rwd   | rwd: -0.0265| spr: 8.312  ||
+||zero max spr   | rwd: -0.0265| spr: 8.312  ||
+||few  avr       | rwd: -0.076 | spr: 4.751  ||
+||few  max rwd   | rwd: -0.029 | spr: 8.2095 ||
+||few  max spr   | rwd: -0.029 | spr: 8.2095 ||
+
+
+||env para       | 1-09                      ||
+||baseline       | rwd: -0.08  | spr: 3.727  ||
+||zero avr       | rwd: -0.302 | spr: 3.709  ||
+||zero max rwd   | rwd: -0.033 | spr: 5.025  ||
+||zero max spr   | rwd: -0.042 | spr: 6.861  ||
+||few  avr       | rwd: -0.253 | spr: 3.838  ||
+||few  max rwd   | rwd: -0.0235| spr: 7.446  ||
+||few  max spr   | rwd: -0.0235| spr: 7.446  ||
+
+
+||env para       | 1-095                     ||
+||baseline       | rwd: -0.04  | spr: 4.875  ||
+||zero avr       | rwd: -0.089 | spr: 4.505  ||
+||zero max rwd   | rwd: -0.016 | spr: 10.5295||
+||zero max spr   | rwd: -0.016 | spr: 10.5295||
+||few  avr       | rwd: -0.164 | spr: 4.418  ||
+||few  max rwd   | rwd: -0.0185| spr: 9.352  ||
+||few  max spr   | rwd: -0.0185| spr: 9.352  ||
+
+
+||env para       | 1-1                       ||
+||baseline       | rwd: -0.055 | spr: 4.356  ||
+||zero avr       | rwd: -0.097 | spr: 4.748  ||
+||zero max rwd   | rwd: -0.0235| spr: 8.412  ||
+||zero max spr   | rwd: -0.0235| spr: 8.412  ||
+||few  avr       | rwd: -0.107 | spr: 4.305  ||
+||few  max rwd   | rwd: -0.023 | spr: 9.081  ||
+||few  max spr   | rwd: -0.023 | spr: 9.081  ||
+
+
+||env para       | 1-105                     ||
+||baseline       | rwd: -0.048 | spr: 5.329  ||
+||zero avr       | rwd: -0.077 | spr: 4.712  ||
+||zero max rwd   | rwd: -0.035 | spr: 6.5505 ||
+||zero max spr   | rwd: -0.035 | spr: 6.5505 ||
+||few  avr       | rwd: -0.087 | spr: 4.415  ||
+||few  max rwd   | rwd: -0.0385| spr: 5.8745 ||
+||few  max spr   | rwd: -0.048 | spr: 6.0955 ||
+
+
+||env para       | 1-11                      ||
+||baseline       | rwd: -0.029 | spr: 7.237  ||
+||zero avr       | rwd: -0.087 | spr: 4.57   ||
+||zero max rwd   | rwd: -0.0455| spr: 5.8635 ||
+||zero max spr   | rwd: -0.048 | spr: 6.1105 ||
+||few  avr       | rwd: -0.088 | spr: 4.619  ||
+||few  max rwd   | rwd: -0.042 | spr: 6.319  ||
+||few  max spr   | rwd: -0.0465| spr: 6.38   ||
+
+
+||env para       | 105-09                    ||
+||baseline       | rwd: -0.066 | spr: 4.857  ||
+||zero avr       | rwd: -0.197 | spr: 4.213  ||
+||zero max rwd   | rwd: -0.032 | spr: 4.9005 ||
+||zero max spr   | rwd: -0.13  | spr: 10.474 ||
+||few  avr       | rwd: -0.215 | spr: 4.007  ||
+||few  max rwd   | rwd: -0.032 | spr: 6.849  ||
+||few  max spr   | rwd: -0.032 | spr: 6.849  ||
+
+
+||env para       | 105-095                   ||
+||baseline       | rwd: -0.023 | spr: 7.612  ||
+||zero avr       | rwd: -0.145 | spr: 4.141  ||
+||zero max rwd   | rwd: -0.038 | spr: 5.641  ||
+||zero max spr   | rwd: -0.0745| spr: 5.885  ||
+||few  avr       | rwd: -0.176 | spr: 4.077  ||
+||few  max rwd   | rwd: -0.033 | spr: 5.1905 ||
+||few  max spr   | rwd: -0.033 | spr: 6.1585 ||
+
+
+||env para       | 105-1                     ||
+||baseline       | rwd: -0.066 | spr: 5.216  ||
+||zero avr       | rwd: -0.074 | spr: 5.212  ||
+||zero max rwd   | rwd: -0.025 | spr: 9.75   ||
+||zero max spr   | rwd: -0.025 | spr: 9.75   ||
+||few  avr       | rwd: -0.14  | spr: 4.381  ||
+||few  max rwd   | rwd: -0.0265| spr: 8.2525 ||
+||few  max spr   | rwd: -0.0265| spr: 8.2525 ||
+
+
+||env para       | 105-105                   ||
+||baseline       | rwd: -0.042 | spr: 6.287  ||
+||zero avr       | rwd: -0.083 | spr: 4.897  ||
+||zero max rwd   | rwd: -0.0225| spr: 9.528  ||
+||zero max spr   | rwd: -0.0225| spr: 9.528  ||
+||few  avr       | rwd: -0.092 | spr: 4.641  ||
+||few  max rwd   | rwd: -0.04  | spr: 6.4905 ||
+||few  max spr   | rwd: -0.053 | spr: 7.884  ||
+
+
+||env para       | 105-11                    ||
+||baseline       | rwd: -0.068 | spr: 4.619  ||
+||zero avr       | rwd: -0.095 | spr: 4.669  ||
+||zero max rwd   | rwd: -0.032 | spr: 7.963  ||
+||zero max spr   | rwd: -0.032 | spr: 7.963  ||
+||few  avr       | rwd: -0.104 | spr: 4.633  ||
+||few  max rwd   | rwd: -0.033 | spr: 7.9135 ||
+||few  max spr   | rwd: -0.033 | spr: 7.9135 ||
+
+
+||env para       | 11-09                     ||
+||baseline       | rwd: -0.038 | spr: 6.28   ||
+||zero avr       | rwd: -0.384 | spr: 3.659  ||
+||zero max rwd   | rwd: -0.038 | spr: 4.9625 ||
+||zero max spr   | rwd: -0.045 | spr: 5.7935 ||
+||few  avr       | rwd: -0.251 | spr: 3.969  ||
+||few  max rwd   | rwd: -0.0315| spr: 7.8775 ||
+||few  max spr   | rwd: -0.0315| spr: 7.8775 ||
+
+
+||env para       | 11-095                    ||
+||baseline       | rwd: -0.084 | spr: 5.553  ||
+||zero avr       | rwd: -0.183 | spr: 4.112  ||
+||zero max rwd   | rwd: -0.0315| spr: 7.738  ||
+||zero max spr   | rwd: -0.0315| spr: 7.738  ||
+||few  avr       | rwd: -0.192 | spr: 4.14   ||
+||few  max rwd   | rwd: -0.021 | spr: 4.9825 ||
+||few  max spr   | rwd: -0.026 | spr: 6.4085 ||
+
+
+||env para       | 11-1                      ||
+||baseline       | rwd: -0.039 | spr: 6.008  ||
+||zero avr       | rwd: -0.085 | spr: 4.901  ||
+||zero max rwd   | rwd: -0.025 | spr: 10.1435||
+||zero max spr   | rwd: -0.025 | spr: 10.1435||
+||few  avr       | rwd: -0.09  | spr: 4.685  ||
+||few  max rwd   | rwd: -0.03  | spr: 9.5155 ||
+||few  max spr   | rwd: -0.03  | spr: 9.5155 ||
+
+
+||env para       | 11-105                    ||
+||baseline       | rwd: -0.055 | spr: 5.842  ||
+||zero avr       | rwd: -0.094 | spr: 4.736  ||
+||zero max rwd   | rwd: -0.038 | spr: 7.567  ||
+||zero max spr   | rwd: -0.038 | spr: 7.567  ||
+||few  avr       | rwd: -0.126 | spr: 4.526  ||
+||few  max rwd   | rwd: -0.042 | spr: 5.963  ||
+||few  max spr   | rwd: -0.048 | spr: 6.8915 ||
+
+
+||env para       | 11-11                     ||
+||baseline       | rwd: -0.065 | spr: 5.367  ||
+||zero avr       | rwd: -0.103 | spr: 4.766  ||
+||zero max rwd   | rwd: -0.0325| spr: 8.296  ||
+||zero max spr   | rwd: -0.0325| spr: 8.296  ||
+||few  avr       | rwd: -0.136 | spr: 4.583  ||
+||few  max rwd   | rwd: -0.045 | spr: 7.5975 ||
+||few  max spr   | rwd: -0.045 | spr: 7.5975 ||
+
+
