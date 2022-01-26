@@ -43,10 +43,12 @@ class FileReader:
         with open("./result/direct_tr/baselines/%s/baseline.txt" % package_name, 'r') as f:
             f.readline()
             rwd_line = f.readline()
+            std_line = f.readline()
             spr_line = f.readline()
             rwd = rwd_line[18:-2].strip()
+            std = std_line[18:-2].strip()
             spr = spr_line[18:-2].strip()
-        return rwd, spr
+        return rwd, std, spr
             #f.write("|reward         | %-15s|\n" % avr_rwd)
             #f.write("|spr rate       | %-15s|\n" % spr_rate)
 
@@ -57,7 +59,9 @@ class FileReader:
             f = np.loadtxt('./result/direct_tr/baselines/%s/few.txt' % package_name)
         avr_rwd = np.sum(f[0])/(len(f[0])-1.)
         avr_rwd = round(avr_rwd, 3)
-        avr_spr = np.sum(f[1])/(len(f[1])-1.)
+        std_dev = np.sum(f[1])/(len(f[1])-1.)
+        std_dev = round(std_dev, 3)
+        avr_spr = np.sum(f[2])/(len(f[1])-1.)
         avr_spr = round(avr_spr, 3)
 
         max_rwd = -1.
@@ -72,20 +76,22 @@ class FileReader:
                 max_spr = f[1][i]
                 max_spr_rwd = f[0][i]
 
-        return avr_rwd, avr_spr, max_rwd, max_rwd_spr, max_spr, max_spr_rwd
+        return avr_rwd, std_dev, avr_spr, max_rwd, max_rwd_spr, max_spr, max_spr_rwd
 
     def rearrange(self):
         baseline = []
+        baseline_std = []
         baseline_spr = []
         zero_shot = []
         few_shot = []
         index = []
         with open('./result/direct_tr/baselines/result.txt', 'w') as f:
             for package_name in self.packages:
-                rwd, spr = self.read_baseline(package_name)
+                rwd, std, spr = self.read_baseline(package_name)
                 zero = self.read_cross(package_name)
                 few = self.read_cross(package_name, 'few-shot')
                 baseline.append(float(rwd))
+                baseline_std.append(float(std))
                 baseline_spr.append(float(spr))
                 zero_shot.append(float(zero[0]))
                 few_shot.append(float(few[0]))
@@ -95,12 +101,15 @@ class FileReader:
 
                 f.write("||env para       | %-26s||\n" % package_name)
                 f.write("||baseline       | rwd: %-7s| spr: %-7s||\n" % (rwd, spr))
-                f.write("||zero avr       | rwd: %-7s| spr: %-7s||\n" % (zero[0], zero[1]))
-                f.write("||zero max rwd   | rwd: %-7s| spr: %-7s||\n" % (zero[2], zero[3]))
-                f.write("||zero max spr   | rwd: %-7s| spr: %-7s||\n" % (zero[5], zero[4]))
-                f.write("||few  avr       | rwd: %-7s| spr: %-7s||\n" % (few[0], few[1]))
-                f.write("||few  max rwd   | rwd: %-7s| spr: %-7s||\n" % (few[2], few[3]))
-                f.write("||few  max spr   | rwd: %-7s| spr: %-7s||\n" % (few[5], few[4]))
+                f.write("||baseline std   | std_dev: %-7s          ||\n" % std)
+                f.write("||zero avr       | rwd: %-7s| spr: %-7s||\n" % (zero[0], zero[2]))
+                f.write("||zero std_dev   | std_dev: %-7s          ||\n" % zero[1])
+                f.write("||zero max rwd   | rwd: %-7s| spr: %-7s||\n" % (zero[3], zero[4]))
+                f.write("||zero max spr   | rwd: %-7s| spr: %-7s||\n" % (zero[6], zero[5]))
+                f.write("||few  avr       | rwd: %-7s| spr: %-7s||\n" % (few[0], few[2]))
+                f.write("||few  std_dev   | std_dev: %-7s          ||\n" % few[1])
+                f.write("||few  max rwd   | rwd: %-7s| spr: %-7s||\n" % (few[3], few[4]))
+                f.write("||few  max spr   | rwd: %-7s| spr: %-7s||\n" % (few[6], few[5]))
                 f.write('\n\n')
 
         fig = plt.figure(figsize=(25, 10))

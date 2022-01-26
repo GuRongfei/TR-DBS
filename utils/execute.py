@@ -39,13 +39,16 @@ def make_env(env_id, rank,seed=0, **env_para ):
 
 
 class Executor:
-    def __init__(self, env_id, env_para, algo_id, algo_para, new_executor=True, use_multi_env=False):
+    def __init__(self, env_id, env_para, algo_id, algo_para, new_executor=True, use_multi_env=False, randomization=None,
+                 tst_folder='baselines'):
         self.env_id = env_id
         self.env_para = env_para
         self.algo_id = algo_id
         self.algo_para = algo_para
         self.new_executor = new_executor
         self.use_multi_env = use_multi_env
+        self.randomization = randomization
+        self.tst_folder = tst_folder
 
         self.folder_num = None
         self.train_env = None
@@ -67,16 +70,33 @@ class Executor:
         self.setup_env()
         self.setup_algo_model()
 
-        self.folder_num = sum([1 for _ in os.listdir('./result/executor/%s/%s/' % (self.env_id, self.algo_id))])
-        self.save_path = './result/executor/%s/%s/%s' % (self.env_id, self.algo_id, str(self.folder_num))
+        root = 'executor'
+        if self.randomization:
+            root = 'dr_executor'
+
+        self.folder_num = sum([1 for _ in os.listdir('./result/%s/%s/%s/' % (root, self.env_id, self.algo_id))])
+        if self.folder_num < 10:
+            folder_name = '0' + str(self.folder_num)
+        else:
+            folder_name = str(self.folder_num)
+        self.save_path = './result/%s/%s/%s/%s' % (root, self.env_id, self.algo_id, folder_name)
         os.mkdir(self.save_path)
 
     def setup_env(self):
         if self.env_id == 'oscillator-v0':
             if self.use_multi_env:
                 self.train_env = SubprocVecEnv([make_env(self.env_id, i, **self.env_para) for i in range(8)])
+            elif self.randomization:
+                env_num = len(self.randomization)
+                train_env_list = []
+                for i in range(env_num):
+                    tmp_env_para = self.randomization[i]
+                    tmp_env = make_env(self.env_id, i, **tmp_env_para)
+                    train_env_list.append(tmp_env)
+                self.train_env = SubprocVecEnv(train_env_list)
             else:
                 self.train_env = gym.make(self.env_id, **self.env_para)
+
             if 'ep_length' in self.env_para.keys():
                 tmp = self.env_para['ep_length']
             else:
@@ -109,20 +129,40 @@ class Executor:
         val_to_str = ['09', '095', '1', '105', '11']
         ar_train = self.env_para['amplitude_rate']
         fr_train = self.env_para['frequency_rate']
-        ar = val_to_str[int(0.5+20*(ar_train-0.9))]
-        fr = val_to_str[int(0.5+20*(fr_train-0.9))]
+        if ar_train == 0.5:
+            ar = '05'
+        elif ar_train == 2.:
+            ar = '2'
+        else:
+            ar = val_to_str[int(0.5+20*(ar_train-0.9))]
+        if fr_train == 0.5:
+            fr = '05'
+        elif fr_train == 2.:
+            fr = '2'
+        else:
+            fr = val_to_str[int(0.5+20*(fr_train-0.9))]
         ar_test = test_env_para['amplitude_rate']
         fr_test = test_env_para['frequency_rate']
-        ar_tst = val_to_str[int(0.5+20*(ar_test-0.9))]
-        fr_tst = val_to_str[int(0.5+20*(fr_test-0.9))]
+        if ar_test == 0.5:
+            ar_tst = '05'
+        elif ar_test == 2.:
+            ar_tst = '2'
+        else:
+            ar_tst = val_to_str[int(0.5+20*(ar_test-0.9))]
+        if fr_test == 0.5:
+            fr_tst = '05'
+        elif fr_test == 2.:
+            fr_tst = '2'
+        else:
+            fr_tst = val_to_str[int(0.5+20*(fr_test-0.9))]
 
         self.finetune_env = SubprocVecEnv([make_env(self.env_id, i, **test_env_para) for i in range(8)])
         test_env_para['ep_length'] = 50000
         self.test_env = gym.make(self.env_id, **test_env_para)
         self.test_obs = self.test_env.reset()
 
-        self.model_path = './result/direct_tr/baselines/%s-%s' % (ar, fr)
-        self.save_path = './result/direct_tr/baselines/%s-%s' % (ar_tst, fr_tst)
+        self.model_path = './result/tr/%s/%s-%s' % (self.tst_folder, ar, fr)
+        self.save_path = './result/tr/%s/%s-%s' % (self.tst_folder, ar_tst, fr_tst)
         self.setup_algo_model(finetune)
         #self.algo_model = self.algo_model.load('%s/model.pkl' % self.model_path)
 
@@ -134,15 +174,21 @@ class Executor:
         self.algo_model.learn(train_timestep)
         self.train_timestep = train_timestep
 
-        """fig = plt.figure(figsize=(25, 5))
+        rwds = self.algo_model.reward_log
+        new_rwds = []
+        for i in range(0, len(rwds), 100):
+            if i+100 < len(rwds):
+                new_rwds.append(np.mean(rwds[i:i+100]))
+
+        fig = plt.figure(figsize=(25, 5))
         ax = fig.add_subplot(111)
-        ax.plot(self.algo_model.episodes_reward, '-', label='State')
+        ax.plot(new_rwds, '-', label='State')
         ax.legend(loc=0)
         ax.grid()
-        ax.set_xlabel("TimeStep(1024*)", fontsize=20)
+        ax.set_xlabel("TimeStep(1024*100)", fontsize=20)
         ax.set_ylabel("reward", fontsize=20)
         ax.set_title("Train Reward", fontsize=25)
-        plt.savefig('%s/trainReward.png' % self.save_path)"""
+        plt.savefig('%s/trainReward.png' % self.save_path)
 
         if save:
             self.algo_model.save('%s/model.pkl' % self.save_path)
@@ -214,16 +260,27 @@ class Executor:
     def savedata(self, reward, spr_rate):
         print("saving para in %s" % self.save_path)
         with open("%s/param.txt" % self. save_path, 'w+') as f:
+            f.write("##################################\n")
             f.write("--------------info----------------\n")
             f.write('|environment    | %-15s|\n' % self.env_id)
             f.write('|algorithm      | %-15s|\n' % self.algo_id)
+            if self.randomization:
+                f.write("##################################\n")
+                f.write("----------randomization-----------\n")
+                for i in range(len(self.randomization)):
+                    f.write("-------------env %s----------------\n" % str(i))
+                    for k, v in self.randomization[i].items():
+                        f.write("|%-15s| %-15s|\n" % (k, v))
+            f.write("##################################\n")
             f.write("-------------env para-------------\n")
             for k, v in self.env_para.items():
                 f.write("|%-15s| %-15s|\n" % (k, v))
+            f.write("##################################\n")
             f.write("------------algo para-------------\n")
             f.write("|train timesteps| %-15s|\n" % self.train_timestep)
             for k, v in self.algo_para.items():
                 f.write("|%-15s| %-15s|\n" % (k, v))
+            f.write("##################################\n")
             f.write("--------------rslt----------------\n")
             f.write("|reward         | %-15s|\n" % reward)
             f.write("|spr rate       | %-15s|" % spr_rate)

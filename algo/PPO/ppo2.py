@@ -90,6 +90,8 @@ class PPO2(ActorCriticRLModel):
         self.n_batch = None
         self.summary = None
 
+        self.reward_log = []
+
         super().__init__(policy=policy, env=env, verbose=verbose, requires_vec_env=True,
                          _init_setup_model=_init_setup_model, policy_kwargs=policy_kwargs,
                          seed=seed, n_cpu_tf_sess=n_cpu_tf_sess)
@@ -339,7 +341,7 @@ class PPO2(ActorCriticRLModel):
                 rollout = self.runner.run(callback)
                 # Unpack
                 obs, returns, masks, actions, values, neglogpacs, states, ep_infos, true_reward = rollout
-
+                self.reward_log.append(np.mean(true_reward))
                 callback.on_rollout_end()
 
                 # Early stopping due to the callback

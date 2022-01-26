@@ -154,7 +154,7 @@ class oscillatorEnv(gym.Env):
     returns: float
     """
     
-    return -(x-np.mean(x_state))**2 - 2*np.abs(action_value)
+    return -(x-np.mean(x_state))**2 - 2*np.abs(action_value)# - 5*np.std(x_state)
 
 def sigmoid(x):
     x_0 = 1.2
