@@ -3435,27 +3435,18 @@ fail:
 SWIGINTERN PyObject *_wrap_Calc_mfx(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   double *arg1 = (double *) 0 ;
-  double arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  double val2 ;
-  int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
   double result;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:Calc_mfx",&obj0,&obj1)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"O:Calc_mfx",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_double, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Calc_mfx" "', argument " "1"" of type '" "double *""'"); 
   }
   arg1 = (double *)(argp1);
-  ecode2 = SWIG_AsVal_double(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Calc_mfx" "', argument " "2"" of type '" "double""'");
-  } 
-  arg2 = (double)(val2);
-  result = (double)Calc_mfx(arg1,arg2);
+  result = (double)Calc_mfx(arg1);
   resultobj = SWIG_From_double((double)(result));
   return resultobj;
 fail:
@@ -3466,27 +3457,18 @@ fail:
 SWIGINTERN PyObject *_wrap_Calc_mfy(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   double *arg1 = (double *) 0 ;
-  double arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  double val2 ;
-  int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
   double result;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:Calc_mfy",&obj0,&obj1)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"O:Calc_mfy",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_double, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Calc_mfy" "', argument " "1"" of type '" "double *""'"); 
   }
   arg1 = (double *)(argp1);
-  ecode2 = SWIG_AsVal_double(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Calc_mfy" "', argument " "2"" of type '" "double""'");
-  } 
-  arg2 = (double)(val2);
-  result = (double)Calc_mfy(arg1,arg2);
+  result = (double)Calc_mfy(arg1);
   resultobj = SWIG_From_double((double)(result));
   return resultobj;
 fail:
