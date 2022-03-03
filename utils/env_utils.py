@@ -56,6 +56,14 @@ class ParamGenerator:
 
         stable_param_ids = self.opt.stable_params.split(',')
         if '0' in stable_param_ids:
+            assert '0' not in random_param_ids, 'randomization of amplitude_rate misused'
+            amplitude_rate = Parameter('amplitude_rate', self.opt.amplitude_rate, random=False)
+            self.parameters.append(amplitude_rate)
+        if '1' in stable_param_ids:
+            assert '1' not in random_param_ids, 'randomization of frequency_rate misused'
+            frequency_rate = Parameter('frequency_rate', self.opt.frequency_rate, random=False)
+            self.parameters.append(frequency_rate)
+        if '2' in stable_param_ids:
             len_state = Parameter('len_state', self.opt.len_state, random=False)
             self.parameters.append(len_state)
 
@@ -89,3 +97,9 @@ class EnvProcessor:
     def close(self):
         for env in self.envs:
             env.close()
+
+    def get_x(self):
+        x_vals = []
+        for env in self.envs:
+            x_vals.append(env.x_val)
+        return x_vals

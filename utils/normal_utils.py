@@ -11,7 +11,7 @@ import gym_oscillator
 
 from algo.PPO_torch.ppo2_torch import PPOTorch
 
-from options.base_options import BaseOptions
+from options.base_options import TrainOptions, TestOptions
 from utils.env_utils import ParamGenerator, EnvProcessor
 
 import matplotlib
