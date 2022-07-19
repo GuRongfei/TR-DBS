@@ -73,7 +73,8 @@ class oscillatorEnv(gym.Env):
       """
       
       #Vectorized form for stable baselines
-      val = float(action[0])
+      ori_action = action
+      val = float(max(min(self.action_space.high[0], action), self.action_space.low[0]))
       self.y = oscillator_cpp.Pertrubation(self.y, val)
       #self.y = oscillator_cpp.Make_step(self.y)
       self.y = oscillator_cpp.Make_step(self.y, self.frequency_rate)
@@ -104,8 +105,7 @@ class oscillatorEnv(gym.Env):
       
       #if sigmoid:
           #arrayed_version = sigmoid(arrayed_version)
-          
-      return arrayed_version, self.Reward(self.x_val,self.x_state,val), self.done, {} 
+      return arrayed_version, self.Reward(self.x_val, self.x_state, float(ori_action)), self.done, {}
 
   
   def reset(self):
@@ -153,7 +153,8 @@ class oscillatorEnv(gym.Env):
     Super duper reward function, i am joking, just sum of absolute values which we supress + penalty for actions
     returns: float
     """
-    
+    #print("####   env: \n####   x: ", x, "\n####   mean: ", np.mean(x_state), "\n####   act: ", action_value,
+          #"\n####   rwd: ", -(x-np.mean(x_state))**2 - 2*np.abs(action_value))
     return -(x-np.mean(x_state))**2 - 2*np.abs(action_value)# - 5*np.std(x_state)
 
 def sigmoid(x):

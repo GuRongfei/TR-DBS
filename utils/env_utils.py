@@ -6,72 +6,46 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 import numpy as np
 import torch
 
-import gym
-import gym_oscillator
-from stable_baselines.common import set_global_seeds
-from stable_baselines.common.vec_env import DummyVecEnv,SubprocVecEnv,VecNormalize, VecEnv
-
-from algo.PPO.ppo2 import PPO2
-from algo.PPO.ppo2_policy import MlpPolicy
-
 import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 
 
 class Parameter:
-    def __init__(self, name, lower_bound, upper_bound=0, random=True):
+    def __init__(self, name, num, lower_bound, upper_bound=0, mode="Stable"):
         self.name = name
+        self.num = num
         self.lower_bound = lower_bound
         self.upper_bound = upper_bound
-        self.random = random
+        self.mode = mode
 
-    def generate(self, mode, num_param):
-        if not self.random:
-            return [self.lower_bound for _ in range(num_param)]
-        if mode == 'uniform':
-            params = np.random.random(num_param)
+    def generate(self):
+        if self.mode == "Stable":
+            return [self.lower_bound for _ in range(self.num)]
+        elif self.mode == 'Uniform':
+            params = np.random.random(self.num)
             params = params * (self.upper_bound - self.lower_bound) + self.lower_bound
             return params
 
 
 class ParamGenerator:
-    def __init__(self, opt):
-        self.mode = opt.generator_mode
-        self.opt = opt
-
+    def __init__(self, env_params):
+        self.env_params = env_params
         self.parameters = []
+        self.num = None
 
         self.initiate()
 
     def initiate(self):
-        # initialize parameters
-        random_param_ids = self.opt.random_params.split(',')
-        if '0' in random_param_ids:
-            amplitude_rate = Parameter('amplitude_rate', self.opt.range_ar_low, self.opt.range_ar_up)
-            self.parameters.append(amplitude_rate)
-        if '1' in random_param_ids:
-            frequency_rate = Parameter('frequency_rate', self.opt.range_fr_low, self.opt.range_fr_up)
-            self.parameters.append(frequency_rate)
+        for env_param in self.env_params:
+            self.parameters.append(Parameter(**env_param))
+        self.num = self.parameters[0].num
 
-        stable_param_ids = self.opt.stable_params.split(',')
-        if '0' in stable_param_ids:
-            assert '0' not in random_param_ids, 'randomization of amplitude_rate misused'
-            amplitude_rate = Parameter('amplitude_rate', self.opt.amplitude_rate, random=False)
-            self.parameters.append(amplitude_rate)
-        if '1' in stable_param_ids:
-            assert '1' not in random_param_ids, 'randomization of frequency_rate misused'
-            frequency_rate = Parameter('frequency_rate', self.opt.frequency_rate, random=False)
-            self.parameters.append(frequency_rate)
-        if '2' in stable_param_ids:
-            len_state = Parameter('len_state', self.opt.len_state, random=False)
-            self.parameters.append(len_state)
-
-    def generate(self, num_env):
-        params = [{} for _ in range(num_env)]
+    def generate(self):
+        params = [{} for _ in range(self.num)]
         for parameter in self.parameters:
-            param = parameter.generate(self.mode, num_env)
-            for i in range(num_env):
+            param = parameter.generate()
+            for i in range(self.num):
                 params[i][parameter.name] = param[i]
         return params
 
@@ -84,15 +58,24 @@ class EnvProcessor:
         obs = [np.array(env.y_state) for env in self.envs]
         return obs
 
+    def reset(self):
+        obs = [torch.Tensor(env.reset()) for env in self.envs]
+        return torch.stack(obs)
+
     def step(self, actions):
-        rewards = []
+        obs_, reward_, done_, info_ = [], [], [], []
         for env_id in range(len(self.envs)):
             env = self.envs[env_id]
             action = actions[env_id]
-            _, reward, _, _ = env.step(action)
-            rewards.append(torch.Tensor([reward]))
-        rewards = torch.stack(rewards)        
-        return rewards
+            obs, reward, done, info = env.step(action.tolist()[0])
+            obs_.append(torch.Tensor(obs))
+            reward_.append(torch.Tensor([reward]))
+            done_.append(torch.Tensor([done]))
+            info_.append(info)
+        obs_ = torch.stack(obs_)
+        reward_ = torch.stack(reward_)
+        done_ = torch.stack(done_)
+        return obs_, reward_, done_, info_
 
     def close(self):
         for env in self.envs:
@@ -103,3 +86,26 @@ class EnvProcessor:
         for env in self.envs:
             x_vals.append(env.x_val)
         return x_vals
+
+    def clip(self, action):
+        action_space = self.envs[0].action_space
+        action = torch.clamp(action, action_space.low[0], action_space.high[0])
+        return action
+
+
+def write_env_info(env_params, file_dir, mode):
+    message = '---------- %5s_env_info  ------------\n' % mode
+    keys = env_params[0].keys()
+    for key in keys:
+        message += "|%-15s" % key
+    message += "\n"
+
+    for env_param in env_params:
+        for key in keys:
+            message += "|%-15.3f" % env_param[key]
+        message += "\n"
+    message += '------------------End--------------------\n'
+    file_name = file_dir + '/' + 'options.txt'
+    with open(file_name, 'a') as f:
+        f.write(message)
+        f.write('\n')
